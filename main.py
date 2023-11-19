@@ -14,7 +14,7 @@ def f(x):
     return x ** 3 + 0.2 * x ** 2 + 0.5 * x - 1.2
 
 
-def get_root_segment(func, start, step=1) -> tuple[int, int]:
+def get_root_segment(func, start=-10, step=1) -> tuple[int, int]:
     """
     Находит сегмент, содержащий корень функции на заданном отрезке.
 
@@ -113,7 +113,7 @@ def bisection_method(a, b, epsilon):
 
 
 # Использование методов
-a, b = get_root_segment(f, -100)
+a, b = get_root_segment(f)
 epsilon = 0.001
 
 root_bisection = round(bisection_method(a, b, epsilon), 3)
