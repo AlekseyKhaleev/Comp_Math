@@ -1,10 +1,15 @@
 import numpy as np
 
+A = np.array([[3.11, -1.66, -0.6],
+              [-1.65, 3.51, -0.78],
+              [0.6, 0.78, -1.87]])
 
-def gauss_elimination(A, b, epsilon):
+b = np.array([-0.92, 1.65, 1.65])
+
+
+def gauss_elimination(A, b, epsilon=0.001):
     n = len(A)
     Ab = np.concatenate((A, b.reshape(n, 1)), axis=1)
-
     for i in range(n):
         # Поиск максимального элемента в столбце под текущей диагональю
         max_row = i
@@ -14,7 +19,6 @@ def gauss_elimination(A, b, epsilon):
 
         # Перестановка строк, чтобы максимальный элемент был на диагонали
         Ab[[i, max_row]] = Ab[[max_row, i]]
-
         if abs(Ab[i, i]) < epsilon:
             raise ValueError("Система уравнений не имеет единственного решения")
 
@@ -22,7 +26,6 @@ def gauss_elimination(A, b, epsilon):
         for j in range(i + 1, n):
             ratio = Ab[j, i] / Ab[i, i]
             Ab[j, i:] -= ratio * Ab[i, i:]
-
     # Обратный ход
     x = np.zeros(n)
     for i in range(n - 1, -1, -1):
@@ -31,17 +34,7 @@ def gauss_elimination(A, b, epsilon):
     return list(round(el, 2) for el in x)
 
 
-A = np.array([[3.11, -1.66, -0.6],
-              [-1.65, 3.51, -0.78],
-              [0.6, 0.78, -1.87]])
-
-b = np.array([-0.92, 1.65, 1.65])
-
-solution = gauss_elimination(A, b, 0.001)
-print(solution)
-
-
-def jacobi_iteration(A, b, epsilon, max_iterations=1000):
+def jacobi_iteration(A, b, epsilon=0.001, max_iterations=1000):
     n = len(A)
     x = np.zeros(n)
     x_new = np.zeros(n)
@@ -59,20 +52,10 @@ def jacobi_iteration(A, b, epsilon, max_iterations=1000):
     if iterations == max_iterations:
         raise ValueError("Метод Якоби не сошелся за заданное количество итераций")
 
-    return list(round(el, 2) for el in x)
+    return [round(el, 2) for el in x]
 
 
-A = np.array([[3.11, -1.66, -0.6],
-              [-1.65, 3.51, -0.78],
-              [0.6, 0.78, -1.87]])
-
-b = np.array([-0.92, 1.65, 1.65])
-
-solution = jacobi_iteration(A, b, 0.001)
-print(solution)
-
-
-def gauss_seidel_iteration(A, b, epsilon, max_iterations=1000):
+def gauss_seidel_iteration(A, b, epsilon=0.001, max_iterations=1000):
     n = len(A)
     x = np.zeros(n)
     iterations = 0
@@ -93,11 +76,7 @@ def gauss_seidel_iteration(A, b, epsilon, max_iterations=1000):
     return list(round(el, 2) for el in x)
 
 
-A = np.array([[3.11, -1.66, -0.6],
-              [-1.65, 3.51, -0.78],
-              [0.6, 0.78, -1.87]])
+solutions = [gauss_elimination(A, b), jacobi_iteration(A, b), gauss_seidel_iteration(A, b)]
 
-b = np.array([-0.92, 1.65, 1.65])
-
-solution = gauss_seidel_iteration(A, b, 0.001)
-print(list(solution))
+for solution, name in zip(solutions, ["Gauss", "Simple iteration(Jacobi)", "Gauss-Seidel"]):
+    print(f"{name} method:\n" + "; ".join(f'x{i} = {x:.2f}' for i, x in enumerate(solution, 1)))
