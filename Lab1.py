@@ -1,9 +1,12 @@
+import math
+
 from scipy.misc import derivative
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-
-def f(x):
+def f(x: int) -> float:
     """
-    Вычисляет значение функции f(x) = x ** 3 + 0.2 * x ** 2 + 0.5 * x - 1.2.
+    Вычисляет значение функции f(x) = x ** 3 + 0.2 * x ** 2 + 0.5 * x - 1.2
 
     Args:
         x: Значение аргумента функции.
@@ -14,9 +17,9 @@ def f(x):
     return x ** 3 + 0.2 * x ** 2 + 0.5 * x - 1.2
 
 
-def get_root_segment(func, start=-10, step=1) -> tuple[int, int]:
+def step_method(func: callable, start=0, step=0.01) -> tuple[int, int]:
     """
-    Находит сегмент, содержащий корень функции на заданном отрезке.
+    Находит отрезок, содержащий корень функции.
 
     Args:
         func: Функция f(x), корень которой необходимо найти.
@@ -29,7 +32,7 @@ def get_root_segment(func, start=-10, step=1) -> tuple[int, int]:
     x0, x1 = start, start + step
     while func(x0) * func(x1) > 0:
         x0, x1 = x1, x1 + step
-    return x0, x1
+    return round(x0,2), round(x1,2)
 
 
 def newton_method(a, b, epsilon):
@@ -108,16 +111,20 @@ def bisection_method(a, b, epsilon):
             a = c
 
     return (a + b) / 2
+def main():
+    # Использование методов
+    a, b = step_method(f)
+    print(f"Корень уравнения находится на отрезке [{a}, {b}]")
 
+    # epsilon = 0.0001
+    #
+    # root_bisection = round(bisection_method(a, b, epsilon), 3)
+    # root_newton = round(newton_method(a, b, epsilon), 3)
+    # root_simple_iteration = round(simple_iteration_method(a, epsilon), 3)
+    #
+    # print("Метод половинного деления: ", root_bisection)
+    # print("Метод Ньютона: ", root_newton)
+    # print("Метод простой итерации: ", root_simple_iteration)
 
-# Использование методов
-a, b = get_root_segment(f)
-epsilon = 0.001
-
-root_bisection = round(bisection_method(a, b, epsilon), 3)
-root_newton = round(newton_method(a, b, epsilon), 3)
-root_simple_iteration = round(simple_iteration_method(a, epsilon), 3)
-
-print("Метод половинного деления: ", root_bisection)
-print("Метод Ньютона: ", root_newton)
-print("Метод простой итерации: ", root_simple_iteration)
+if __name__ == "__main__":
+    main()
