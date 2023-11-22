@@ -4,79 +4,100 @@ A = np.array([[3.11, -1.66, -0.6],
               [-1.65, 3.51, -0.78],
               [0.6, 0.78, -1.87]])
 
-b = np.array([-0.92, 1.65, 1.65])
+B = np.array([-0.92, 1.65, 1.65])
 
 
-def gauss_elimination(A, b, epsilon=0.001):
-    n = len(A)
-    Ab = np.concatenate((A, b.reshape(n, 1)), axis=1)
+def gauss(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """
+    Рассчитывает решение системы линейных уравнений с использованием метода Гаусса.
+
+    Параметры:
+        a (numpy.ndarray): Матрица коэффициентов системы линейных уравнений.
+        b (numpy.ndarray): Вектор правых частей системы линейных уравнений.
+
+    Возвращает:
+        x (numpy.ndarray): Вектор решения системы линейных уравнений.
+    """
+    n = len(a)
+    system = np.hstack([a, b.reshape(-1, 1)])
+
     for i in range(n):
-        # Поиск максимального элемента в столбце под текущей диагональю
-        max_row = i
-        for j in range(i + 1, n):
-            if abs(Ab[j, i]) > abs(Ab[max_row, i]):
-                max_row = j
+        max_row_index = np.abs(system[i:, i]).argmax() + i
 
-        # Перестановка строк, чтобы максимальный элемент был на диагонали
-        Ab[[i, max_row]] = Ab[[max_row, i]]
-        if abs(Ab[i, i]) < epsilon:
-            raise ValueError("Система уравнений не имеет единственного решения")
+        if i != max_row_index:
+            system[[i, max_row_index]] = system[[max_row_index, i]]
 
-        # Приведение к треугольному виду
         for j in range(i + 1, n):
-            ratio = Ab[j, i] / Ab[i, i]
-            Ab[j, i:] -= ratio * Ab[i, i:]
-    # Обратный ход
+            system[j] = system[j] - system[i] * system[j, i] / system[i, i]
+
     x = np.zeros(n)
     for i in range(n - 1, -1, -1):
-        x[i] = (Ab[i, -1] - np.dot(Ab[i, i + 1:-1], x[i + 1:])) / Ab[i, i]
+        x[i] = (system[i, -1] - np.dot(system[i, :-1], x)) / system[i, i]
 
-    return list(round(el, 2) for el in x)
+    return x
 
 
-def jacobi_iteration(A, b, epsilon=0.001, max_iterations=1000):
-    n = len(A)
+def jacobi(a: np.ndarray, b: np.ndarray, epsilon: float = 0.0001, max_iterations: int = 1000) -> np.ndarray:
+    """
+    Рассчитывает решение системы линейных уравнений с использованием метода Якоби.
+
+    Параметры:
+        a (numpy.ndarray): Матрица коэффициентов системы линейных уравнений.
+        b (numpy.ndarray): Вектор правых частей системы линейных уравнений.
+        epsilon (float, опционально): Точность сходимости. По умолчанию 0.0001.
+        max_iterations (int, опционально): Максимальное количество итераций. По умолчанию 1000.
+
+    Возвращает:
+        x (numpy.ndarray): Вектор решения системы линейных уравнений.
+    """
+    n = len(a)
     x = np.zeros(n)
-    x_new = np.zeros(n)
-    iterations = 0
-    error = epsilon + 1
 
-    while error > epsilon and iterations < max_iterations:
-        for i in range(n):
-            x_new[i] = (b[i] - np.dot(A[i, :i], x[:i]) - np.dot(A[i, i + 1:], x[i + 1:])) / A[i, i]
-
-        error = np.max(np.abs(x_new - x))
-        x = x_new.copy()
-        iterations += 1
-
-    if iterations == max_iterations:
-        raise ValueError("Метод Якоби не сошелся за заданное количество итераций")
-
-    return [round(el, 2) for el in x]
-
-
-def gauss_seidel_iteration(A, b, epsilon=0.001, max_iterations=1000):
-    n = len(A)
-    x = np.zeros(n)
-    iterations = 0
-    error = epsilon + 1
-
-    while error > epsilon and iterations < max_iterations:
-        x_prev = x.copy()
+    for _ in range(max_iterations):
+        x_new = np.copy(x)
 
         for i in range(n):
-            x[i] = (b[i] - np.dot(A[i, :i], x[:i]) - np.dot(A[i, i + 1:], x_prev[i + 1:])) / A[i, i]
+            s1 = np.dot(a[i, :i], x[:i])
+            s2 = np.dot(a[i, i + 1:], x[i + 1:])
+            x_new[i] = (b[i] - s1 - s2) / a[i, i]
 
-        error = np.max(np.abs(x - x_prev))
-        iterations += 1
+        if np.allclose(x, x_new, rtol=epsilon):
+            break
 
-    if iterations == max_iterations:
-        raise ValueError("Метод Гаусса-Зейделя не сошелся за заданное количество итераций")
+        x = x_new
 
-    return list(round(el, 2) for el in x)
+    return x
 
 
-solutions = [gauss_elimination(A, b), jacobi_iteration(A, b), gauss_seidel_iteration(A, b)]
+def gauss_seidel(a, b, epsilon=0.0001, max_iterations=1000):
+    """
+    Рассчитывает решение системы линейных уравнений с использованием метода Гаусса-Зейделя.
+
+    Параметры:
+        a (numpy.ndarray): Матрица коэффициентов системы линейных уравнений.
+        b (numpy.ndarray): Вектор правых частей системы линейных уравнений.
+        epsilon (float, опционально): Точность сходимости. По умолчанию 0.0001.
+        max_iterations (int, опционально): Максимальное количество итераций. По умолчанию 1000.
+
+    Возвращает:
+        x (numpy.ndarray): Вектор решения системы линейных уравнений.
+    """
+    n = len(a)
+    x = np.zeros(n)
+
+    for _ in range(max_iterations):
+        for i in range(n):
+            s1 = np.dot(a[i, :i], x[:i])
+            s2 = np.dot(a[i, i + 1:], x[i + 1:])
+            x[i] = (b[i] - s1 - s2) / a[i, i]
+
+        if np.allclose(np.dot(a, x), b, rtol=epsilon):
+            break
+
+    return x
+
+
+solutions = [gauss(A, B), jacobi(A, B), gauss_seidel(A, B)]
 
 for solution, name in zip(solutions, ["Gauss", "Simple iteration(Jacobi)", "Gauss-Seidel"]):
-    print(f"{name} method:\n" + "; ".join(f'x{i} = {x:.2f}' for i, x in enumerate(solution, 1)))
+    print(f"{name} method:\n" + "; ".join(f'x{i} = {x:.3f}' for i, x in enumerate(solution, 1)))

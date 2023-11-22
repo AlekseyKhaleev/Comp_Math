@@ -79,9 +79,7 @@ def simple_iteration_method(a, epsilon):
     x_prev = a
     x_curr = g(x_prev)
     while abs(f(x_curr)) >= epsilon:
-        x_prev = x_curr
-        x_curr = g(x_prev)
-
+        x_prev, x_curr = x_curr, g(x_prev)
     return x_curr
 
 
