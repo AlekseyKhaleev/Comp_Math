@@ -62,8 +62,8 @@ def simple_iteration_method(func: callable, a: float, b: float, epsilon: float) 
 def main():
     # Использование методов
     a, b = step_method(func=f, start=0.8, step=0.01)
-    root_jacobi = simple_iteration_method(f, a, b, epsilon=0.001)
-    print(f"Метод простых итераций (Якоби): {root_jacobi:.4f}")
+    root_simple_iteration = simple_iteration_method(f, a, b, epsilon=0.001)
+    print(f"Метод простой итерации: {root_simple_iteration:.4f}")
 
 
 if __name__ == "__main__":

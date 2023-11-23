@@ -4,7 +4,7 @@ A = np.array([[3.11, -1.66, -0.6],
               [-1.65, 3.51, -0.78],
               [0.6, 0.78, -1.87]])
 
-B = np.array([-0.92, 1.65, 1.65])
+B = np.array([-0.92, 2.57, 1.65])
 
 
 def gauss(a: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -100,4 +100,4 @@ def gauss_seidel(a, b, epsilon=0.0001, max_iterations=1000):
 solutions = [gauss(A, B), jacobi(A, B), gauss_seidel(A, B)]
 
 for solution, name in zip(solutions, ["Gauss", "Simple iteration(Jacobi)", "Gauss-Seidel"]):
-    print(f"{name} method:\n" + "; ".join(f'x{i} = {x:.3f}' for i, x in enumerate(solution, 1)))
+    print(f"{name} method:\n" + "; ".join(f'x{i} = {x:.4f}' for i, x in enumerate(solution, 1)))
