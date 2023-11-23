@@ -30,7 +30,7 @@ def step_method(func: callable, start=0, step=0.01) -> tuple[int, int]:
         Кортеж с началом и концом сегмента, содержащего корень функции.
     """
     x0, x1 = start, start + step
-    while func(x0) * func(x1) > 0:
+    while func(x0) * func(x1) >= 0:
         x0, x1 = x1, x1 + step
     return round(x0,2), round(x1,2)
 
@@ -61,7 +61,7 @@ def newton_method(a, b, epsilon):
     return x_curr
 
 
-def simple_iteration_method(a, epsilon):
+def simple_iteration_method(a, b, epsilon):
     """
     Реализует метод простых итераций для численного решения уравнения f(x) = 0 на заданном отрезке [a, b].
     Реализована для случая, когда функция f(x) = x ** 3 + 0.2 * x ** 2 + 0.5 * x - 1.2
@@ -116,15 +116,15 @@ def main():
     a, b = step_method(f)
     print(f"Корень уравнения находится на отрезке [{a}, {b}]")
 
-    # epsilon = 0.0001
-    #
-    # root_bisection = round(bisection_method(a, b, epsilon), 3)
-    # root_newton = round(newton_method(a, b, epsilon), 3)
-    # root_simple_iteration = round(simple_iteration_method(a, epsilon), 3)
-    #
-    # print("Метод половинного деления: ", root_bisection)
-    # print("Метод Ньютона: ", root_newton)
-    # print("Метод простой итерации: ", root_simple_iteration)
+    epsilon = 0.0001
+
+    root_bisection = round(bisection_method(a, b, epsilon), 3)
+    root_newton = round(newton_method(a, b, epsilon), 3)
+    root_simple_iteration = round(simple_iteration_method(a, b, epsilon), 3)
+
+    print("Метод половинного деления: ", root_bisection)
+    print("Метод Ньютона: ", root_newton)
+    print("Метод простой итерации: ", root_simple_iteration)
 
 if __name__ == "__main__":
     main()
