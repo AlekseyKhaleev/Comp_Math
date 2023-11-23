@@ -14,7 +14,6 @@ def f(x: float) -> float:
     Возвращаемое значение:
         Значение функции в точке x.
     """
-
     return x ** 3 + 0.2 * x ** 2 + 0.5 * x - 1.2
 
 
@@ -36,12 +35,13 @@ def step_method(func: callable, start: float, step: float) -> tuple[int, int]:
     return round(x0, 2), round(x1, 2)
 
 
-def simple_iteration_method(a, b, epsilon):
+def simple_iteration_method(func: callable, a: float, b: float, epsilon: float) -> float:
     """
-    Реализует метод простых итераций для численного решения уравнения f(x) = 0 на заданном отрезке [a, b].
-    Реализована для случая, когда функция f(x) = x ** 3 + 0.2 * x ** 2 + 0.5 * x - 1.2
-    Так как g(x) = (1.2 - 0.2 * x ** 2 - 0.5 * x) ** (1 / 3) является эквивалетной, а
-    g'(x) меньше 1 для обоих концов отрезка
+    Реализует метод простых итераций для численного решения уравнения
+       f(x) = 0 на заданном отрезке [a, b].
+    Реализовано для функции f(x) = x ** 3 + 0.2 * x ** 2 + 0.5 * x - 1.2 = 0
+    Тогда g(x) = (1.2 - 0.2 * x ** 2 - 0.5 * x) ** (1 / 3) является эквивалентной,
+      так как g'(x) меньше 1 для обоих концов отрезка
 
     Параметры:
         a: Начало отрезка.
@@ -53,19 +53,17 @@ def simple_iteration_method(a, b, epsilon):
     g = lambda x: (1.2 - 0.2 * x ** 2 - 0.5 * x) ** (1 / 3)
     if any(derivative(g, x0=point) >= 1 for point in [a, b]):
         raise ValueError("Условие сходимости не выполнено на заданном отрезке")
-
-    x_prev = a
-    x_curr = g(x_prev)
-    while abs(f(x_curr)) >= epsilon:
-        x_prev, x_curr = x_curr, g(x_prev)
-    return x_curr
+    xi = g(a)
+    while abs(func(xi)) >= epsilon:
+        xi = g(xi)
+    return xi
 
 
 def main():
     # Использование методов
     a, b = step_method(func=f, start=0.8, step=0.01)
-    root_jacobi = simple_iteration_method(a, b, epsilon=0.001)
-    print(f"Метод Ньютона (метод касательных): {root_jacobi:.4f}")
+    root_jacobi = simple_iteration_method(f, a, b, epsilon=0.001)
+    print(f"Метод простых итераций (Якоби): {root_jacobi:.4f}")
 
 
 if __name__ == "__main__":
