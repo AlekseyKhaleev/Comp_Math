@@ -37,7 +37,7 @@ def gauss(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     return x
 
 
-def jacobi(a: np.ndarray, b: np.ndarray, epsilon: float = 0.0001, max_iterations: int = 1000) -> np.ndarray:
+def jacobi(a: np.ndarray, b: np.ndarray, epsilon: float = 0.001, max_iterations: int = 1000) -> np.ndarray:
     """
     Рассчитывает решение системы линейных уравнений с использованием метода Якоби.
 
@@ -52,9 +52,10 @@ def jacobi(a: np.ndarray, b: np.ndarray, epsilon: float = 0.0001, max_iterations
     """
     n = len(a)
     x = np.zeros(n)
-
+    tmp = 0
     for _ in range(max_iterations):
         x_new = np.copy(x)
+        tmp += 1
 
         for i in range(n):
             s1 = np.dot(a[i, :i], x[:i])
@@ -65,11 +66,11 @@ def jacobi(a: np.ndarray, b: np.ndarray, epsilon: float = 0.0001, max_iterations
             break
 
         x = x_new
-
+    print(f"количеcтво итераций: {tmp}")
     return x
 
 
-def gauss_seidel(a, b, epsilon=0.0001, max_iterations=1000):
+def gauss_seidel(a, b, epsilon=0.001, max_iterations=1000):
     """
     Рассчитывает решение системы линейных уравнений с использованием метода Гаусса-Зейделя.
 
