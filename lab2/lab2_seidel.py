@@ -1,9 +1,9 @@
 import numpy as np
 
 
-def jacobi(a: np.ndarray, b: np.ndarray, epsilon: float, max_iterations: int = 1000) -> np.ndarray:
+def gauss_seidel(a, b, epsilon=0.001, max_iterations=1000):
     """
-    Рассчитывает решение системы линейных уравнений с использованием метода Якоби.
+    Рассчитывает решение системы линейных уравнений с использованием метода Гаусса-Зейделя.
 
     Параметры:
         a (numpy.ndarray): Матрица коэффициентов системы линейных уравнений.
@@ -16,20 +16,16 @@ def jacobi(a: np.ndarray, b: np.ndarray, epsilon: float, max_iterations: int = 1
     """
     n = len(a)
     x = np.zeros(n)  # начальное приближение (нулевой вектор)
-    it_counter = 0  # счетчик итераций
+    it_counter = 0
     for _ in range(max_iterations):
-        x_new = np.copy(x)
         it_counter += 1
-
         for i in range(n):
             s1 = np.dot(a[i, :i], x[:i])  # произведение векторов (срезов, чтобы исключить диагональные элементы)
             s2 = np.dot(a[i, i + 1:], x[i + 1:])
-            x_new[i] = (b[i] - s1 - s2) / a[i, i]  # вычисление значения нового вектора
+            x[i] = (b[i] - s1 - s2) / a[i, i]  # обновление значений вектора в процессе итерации
 
-        if np.allclose(x, x_new, rtol=epsilon):  # проверка на соответствие заданной точности
+        if np.allclose(np.dot(a, x), b, rtol=epsilon):  # проверка на соответствие заданной точности
             break
-
-        x = x_new
     print(f"Количеcтво итераций: {it_counter}")
     return x
 
@@ -42,8 +38,8 @@ def main() -> None:
 
     B = np.array([-0.92, 2.57, 1.65])
 
-    solution = jacobi(A, B, epsilon=0.001)
-    print(f"Решение методом простых итераций (Якоби):")
+    solution = gauss_seidel(A, B, epsilon=0.001)
+    print(f"Решение методом Гаусса-Зейделя:")
     print("; ".join(f'x{i} = {x:.4f}' for i, x in enumerate(solution, 1)))
 
 
