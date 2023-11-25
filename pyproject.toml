@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.11"
 scipy = "^1.11.4"
 findiff = "^0.10.0"
+sympy = "^1.12"
 
 
 [build-system]
